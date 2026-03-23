@@ -1,185 +1,81 @@
 # Intentional YouTube
 
-A Chrome extension that turns YouTube into an intentional-use product. Removes Shorts, recommendations, and algorithmic distractions so you only see what you chose to watch.
-
-Inspired by PewDiePie's March 2026 setup where comments appear directly below the video, Shorts are gone, and the homepage redirects to Subscriptions.
+A Chrome extension that removes Shorts, recommendations, and distractions from YouTube. You only see what you chose to watch.
 
 ## Install
 
-1. Clone/download this repo
+### Chrome Web Store
+
+Coming soon.
+
+### Manual
+
+1. Clone this repo
 2. Open `chrome://extensions`
-3. Enable "Developer mode" (top right)
-4. Click "Load unpacked" → select the `intentional-youtube` folder
+3. Enable **Developer mode** (top right)
+4. Click **Load unpacked** → select the `intentional-youtube` folder
 5. Open YouTube
 
-## Architecture
+## What it does
+
+| Setting | What it removes |
+|---|---|
+| **Hide Home** | Redirects `youtube.com` to Subscriptions (or Watch Later / Library). Hides the Home link in the sidebar. |
+| **Hide Shorts** | Removes Shorts everywhere — nav link, shelves, search results, channel tabs. Redirects `/shorts/*` URLs. |
+| **Hide Distractions** | Removes the recommendation sidebar, autoplay, end-screen overlays, suggestion cards, suggested mixes, Trending and Explore nav links. Expands the watch page to full width. |
+| **Monk Mode** | Turns everything on. Locks YouTube to only Subscriptions, Search, Channels, and Watch pages. Hides History, Library, Playlists, and notification badges. Any other page redirects to Subscriptions. |
+
+## How it works
+
+1. **Service worker** redirects `youtube.com/` before the page loads via `declarativeNetRequest`
+2. **Content scripts** run at `document_start` and clean up the DOM after settings load
+3. **Router** detects the current page type using YouTube's SPA navigation events (`yt-navigate-finish`, `popstate`)
+4. **Page modules** hide elements specific to each page (home, watch, search, channel, shorts)
+5. **MutationObserver** re-runs cleanup when YouTube injects new content (throttled at 200ms)
+6. **Layout module** expands the primary column and pulls comments up when the sidebar is hidden
+
+## Selector strategy
+
+All YouTube DOM selectors live in [`src/content/selectors.js`](src/content/selectors.js). Each target has an array of fallback selectors — if YouTube changes their markup, update this one file.
+
+To debug selectors, open the browser console on YouTube and run:
+
+```js
+__iyt.testAll()   // test all selectors against current page
+__iyt.test('ytd-reel-shelf-renderer')   // test a specific selector
+__iyt.enable()    // enable debug logging
+```
+
+## Project structure
 
 ```
 intentional-youtube/
-├── manifest.json                  # MV3 manifest
+├── manifest.json
+├── icons/
 ├── src/
 │   ├── background/
-│   │   └── service-worker.js      # Home redirect via declarativeNetRequest
+│   │   └── service-worker.js        # declarativeNetRequest redirect rules
 │   ├── content/
-│   │   ├── settings-bridge.js     # Loads settings for content scripts
-│   │   ├── selectors.js           # All YouTube DOM selectors (centralized)
-│   │   ├── router.js              # SPA route detection
-│   │   ├── rules-engine.js        # DOM hide/remove operations
-│   │   ├── pages/
-│   │   │   ├── home.js            # Homepage redirect + feed cleanup
-│   │   │   ├── watch.js           # Watch page: sidebar, autoplay, endscreen
-│   │   │   ├── search.js          # Search results cleanup
-│   │   │   ├── channel.js         # Channel page Shorts/suggestions removal
-│   │   │   ├── subscriptions.js   # Subscriptions feed cleanup
-│   │   │   └── shorts.js          # Shorts page block/redirect
-│   │   ├── layout.js              # Watch page reflow (expand primary, pull comments up)
-│   │   ├── observer.js            # MutationObserver with throttling
-│   │   ├── debug.js               # Debug logging and selector testing
-│   │   └── main.js                # Entry point, orchestrates everything
+│   │   ├── settings-bridge.js       # Loads settings, exposes IntentionalYT global
+│   │   ├── debug.js                 # Console debug tools (__iyt)
+│   │   ├── selectors.js             # All YouTube DOM selectors
+│   │   ├── router.js                # SPA page type detection
+│   │   ├── rules-engine.js          # DOM query + hide/remove operations
+│   │   ├── layout.js                # Watch page reflow
+│   │   ├── observer.js              # MutationObserver
+│   │   ├── main.js                  # Orchestrates cleanup
+│   │   └── pages/                   # Per-page cleanup modules
 │   ├── popup/
-│   │   ├── popup.html             # Settings popup
-│   │   └── popup.js               # Settings controller
+│   │   ├── popup.html               # Settings UI
+│   │   └── popup.js                 # Settings controller
 │   └── styles/
-│       └── intentional.css        # Layout overrides
-└── icons/
+│       └── intentional.css          # Layout overrides
 ```
 
-### How it works
+## Privacy
 
-1. **Service worker** sets up `declarativeNetRequest` rules to redirect `youtube.com/` to `/feed/subscriptions` before the page even loads
-2. **Content scripts** load at `document_start` and initialize after settings are ready
-3. **Router** detects the current page type and listens for YouTube's SPA navigation events (`yt-navigate-finish`, `popstate`)
-4. **Page modules** run selectors to hide/remove unwanted elements specific to each page type
-5. **MutationObserver** watches for YouTube injecting new content and re-runs cleanup (throttled at 200ms)
-6. **Layout module** expands the primary column and pulls comments up when the sidebar is hidden on watch pages
-7. **CSS** provides layout rules for the expanded watch page and backup hiding
+No data collected. No analytics. No tracking. All settings stored locally via `chrome.storage.local`.
 
-### Key design decisions
+## License
 
-- **Selectors are centralized** in `selectors.js` — when YouTube changes markup, update one file
-- **Multiple fallback selectors** per target — if one breaks, the next one matches
-- **`display: none !important`** over `element.remove()` for most hiding — safer, reversible, avoids breaking YouTube's internal state
-- **Throttled observer** — 200ms debounce prevents performance issues from rapid DOM mutations
-- **Graceful degradation** — if a selector fails, the rest of the extension keeps working
-
-## Selector Strategy
-
-All selectors live in `src/content/selectors.js`, grouped by category:
-
-| Group | Purpose |
-|---|---|
-| `shorts.*` | Shorts shelves, items, nav links, channel tabs |
-| `recommendations.*` | Homepage feed, watch sidebar, autoplay, endscreen, cards |
-| `preserve.*` | Elements that must NOT be hidden (player, title, comments) |
-| `watchLayout.*` | Structural elements for layout reflow |
-| `nav.*` | Navigation links (trending, explore) |
-| `misc.*` | Hover previews, mini-player, notification badges |
-
-Each entry is an array of CSS selectors tried in order. First match wins.
-
-### Updating broken selectors
-
-1. Open YouTube, press F12
-2. In console: `__iyt.testAll()` — shows which selectors match and which don't
-3. Find the broken selector in `selectors.js`
-4. Use the Elements panel to find the new selector
-5. Add the new selector to the **front** of the array (highest priority)
-6. Keep old selectors as fallbacks
-7. Test: `__iyt.test('your-new-selector')`
-
-## Debug Mode
-
-Enable in the popup or set `debugMode: true` in storage.
-
-### Console commands
-
-| Command | Description |
-|---|---|
-| `__iyt.stats()` | Print rule firing statistics |
-| `__iyt.testAll()` | Test all selectors against current page |
-| `__iyt.test('selector')` | Test a specific CSS selector |
-| `__iyt.enable()` | Enable debug logging |
-| `__iyt.disable()` | Disable debug logging |
-
-Debug logs are prefixed with `[IYT:category]` and color-coded in the console.
-
-## Settings
-
-All settings stored in `chrome.storage.local`. Defaults:
-
-| Setting | Default | Description |
-|---|---|---|
-| `redirectHome` | `true` | Redirect youtube.com to subscriptions |
-| `redirectTarget` | `subscriptions` | Where to redirect (subscriptions/watch-later/library) |
-| `hideShorts` | `true` | Remove Shorts everywhere |
-| `hideRecommendations` | `true` | Remove all recommendation surfaces |
-| `hideHomeFeed` | `true` | Hide homepage feed content |
-| `hideEndScreen` | `true` | Remove end-screen overlays |
-| `disableAutoplay` | `true` | Disable autoplay UI |
-| `strictMode` | `false` | Maximum distraction removal |
-| `monkMode` | `false` | Only subs + search + channels |
-| `debugMode` | `false` | Enable debug console output |
-
-## Manual Test Checklist
-
-### Home page
-- [ ] Opening youtube.com redirects to /feed/subscriptions
-- [ ] Direct navigation to youtube.com/ redirects
-- [ ] Clicking YouTube logo redirects
-- [ ] If redirect disabled: homepage feed is hidden
-- [ ] Shorts shelves hidden on home
-
-### Watch page
-- [ ] Video plays normally
-- [ ] Title, channel info, like/share visible
-- [ ] Description expandable
-- [ ] Comments visible directly below video info
-- [ ] Right sidebar (related videos) hidden
-- [ ] No recommendation blocks between video and comments
-- [ ] End-screen suggestions hidden
-- [ ] Autoplay toggle hidden/disabled
-- [ ] Theater mode works correctly
-- [ ] Full-screen works
-
-### Search results
-- [ ] Search works normally
-- [ ] Video results display
-- [ ] Channel results display
-- [ ] Shorts results hidden
-- [ ] "People also watched" shelves hidden
-
-### Channel pages
-- [ ] Channel loads normally
-- [ ] Videos tab works
-- [ ] Playlists tab works
-- [ ] Shorts tab hidden
-- [ ] Shorts shelf hidden
-
-### Subscriptions
-- [ ] Feed loads and displays normally
-- [ ] Shorts shelf hidden if present
-- [ ] Can click through to videos
-
-### Shorts
-- [ ] Navigating to /shorts/* shows blocked message or redirects
-- [ ] Shorts links from other pages are handled
-
-### SPA navigation
-- [ ] Clicking a video from subs → watch page cleanup runs
-- [ ] Back button → previous page cleanup runs
-- [ ] Search from watch page → search cleanup runs
-- [ ] Channel link from watch → channel cleanup runs
-- [ ] No cleanup failures after 10+ navigations
-
-### Settings
-- [ ] Popup opens and shows current settings
-- [ ] Toggling a setting takes effect on next YouTube navigation
-- [ ] "Reload YouTube tabs" button works
-- [ ] Strict mode enables all toggles
-- [ ] Monk mode enables all toggles
-
-### Edge cases
-- [ ] Logged out YouTube
-- [ ] Different screen widths (1280, 1920, 2560)
-- [ ] Multiple YouTube tabs open
-- [ ] Extension disable/re-enable
+MIT
