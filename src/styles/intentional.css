@@ -1,0 +1,86 @@
+/*
+ * Intentional YouTube — CSS overrides
+ * Handles layout reflow when sidebar/recommendations are hidden
+ * Uses !important sparingly and only where needed to override YT styles
+ */
+
+/* ── Watch page: expand primary when sidebar is hidden ────────────── */
+
+ytd-watch-flexy.iyt-no-sidebar #secondary {
+  display: none !important;
+}
+
+ytd-watch-flexy.iyt-no-sidebar #primary {
+  max-width: 100% !important;
+  margin: 0 auto !important;
+}
+
+ytd-watch-flexy.iyt-no-sidebar #columns {
+  max-width: 100% !important;
+}
+
+/* Keep video player at a reasonable max width */
+ytd-watch-flexy.iyt-no-sidebar #primary-inner {
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+}
+
+/* Ensure player sizing stays good */
+ytd-watch-flexy.iyt-no-sidebar .html5-video-container {
+  width: 100% !important;
+}
+
+/* ── Watch page: pull comments up ─────────────────────────────────── */
+
+ytd-watch-flexy.iyt-no-sidebar ytd-comments#comments {
+  display: block !important;
+  margin-top: 0 !important;
+}
+
+.iyt-comments-visible {
+  display: block !important;
+}
+
+/* Hide any recommendation injection between metadata and comments */
+ytd-watch-flexy.iyt-no-sidebar #below > ytd-watch-next-secondary-results-renderer {
+  display: none !important;
+}
+
+/* ── Autoplay/end screen removal via CSS (backup for JS) ──────────── */
+
+.ytp-autonav-endscreen-countdown,
+.ytp-autonav-endscreen-upnext-container {
+  display: none !important;
+}
+
+/* ── Shorts hiding via CSS (fast, before JS runs) ─────────────────── */
+
+/* Shorts shelf */
+ytd-reel-shelf-renderer[data-iyt-hidden="true"],
+ytd-rich-shelf-renderer[is-shorts][data-iyt-hidden="true"] {
+  display: none !important;
+}
+
+/* ── Smooth transitions to avoid jarring layout shifts ────────────── */
+
+ytd-watch-flexy.iyt-no-sidebar #primary,
+ytd-watch-flexy.iyt-no-sidebar #primary-inner {
+  transition: max-width 0.2s ease;
+}
+
+/* ── Home page empty state when feed is hidden ────────────────────── */
+
+#iyt-shorts-blocked {
+  width: 100%;
+}
+
+/* ── Fix for theater mode ─────────────────────────────────────────── */
+
+ytd-watch-flexy[theater].iyt-no-sidebar #player-theater-container {
+  max-width: 100% !important;
+}
+
+ytd-watch-flexy[theater].iyt-no-sidebar #columns {
+  max-width: 100% !important;
+  padding: 0 24px !important;
+}

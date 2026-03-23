@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      color: #1a1a1a;
+      background: #fff;
+    }
+
+    .header {
+      padding: 16px 16px 12px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    .header h1 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: #666;
+      margin-top: 2px;
+    }
+
+    .section {
+      padding: 12px 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .section:last-of-type {
+      border-bottom: none;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      user-select: none;
+      cursor: pointer;
+    }
+
+    .toggle-sublabel {
+      font-size: 11px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+    .toggle {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+
+    .toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle .slider {
+      position: absolute;
+      inset: 0;
+      background: #ccc;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .toggle .slider::before {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      left: 2px;
+      top: 2px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.15s;
+    }
+
+    .toggle input:checked + .slider {
+      background: #1a1a1a;
+    }
+
+    .toggle input:checked + .slider::before {
+      transform: translateX(16px);
+    }
+
+    .select-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .select-row select {
+      font-size: 12px;
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fafafa;
+      color: #1a1a1a;
+      cursor: pointer;
+    }
+
+    .footer {
+      padding: 12px 16px;
+      border-top: 1px solid #e5e5e5;
+      background: #f7f7f7;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer a {
+      font-size: 12px;
+      color: #888;
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      color: #1a1a1a;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-sep {
+      width: 1px;
+      height: 10px;
+      background: #ddd;
+    }
+
+    #donate {
+      color: #7c3aed;
+    }
+
+    #donate:hover {
+      color: #5b21b6;
+    }
+
+    .reload-banner {
+      display: none;
+      padding: 8px 16px;
+      background: #fffbeb;
+      border-top: 1px solid #fde68a;
+      font-size: 12px;
+      color: #92400e;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .reload-banner:hover {
+      background: #fef3c7;
+    }
+
+    .reload-banner.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Intentional YouTube</h1>
+    <p>Focus on what you chose to watch</p>
+  </div>
+
+  <div class="section">
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Hide Home</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="redirectHome">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="select-row" id="redirect-target-row">
+      <span class="toggle-label">Redirect to</span>
+      <select id="redirectTarget">
+        <option value="subscriptions">Subscriptions</option>
+        <option value="watch-later">Watch Later</option>
+        <option value="library">Library</option>
+      </select>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Hide Shorts</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="hideShorts">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Hide Distractions</div>
+        <div class="toggle-sublabel">Recommendations, autoplay, suggested videos</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="hideDistractions">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <div class="toggle-label">Monk Mode</div>
+        <div class="toggle-sublabel">Only subs, search, channels</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="monkMode">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+
+  <div class="reload-banner" id="reload-banner">Reload YouTube tabs to apply changes</div>
+
+  <div class="footer">
+    <a href="https://buymeacoffee.com/gabrielgustavoandrade" id="donate" target="_blank">Buy me a coffee ☕</a>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
