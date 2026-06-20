@@ -44,6 +44,10 @@
     const page = router.current;
     debug?.log('cleanup', `Running cleanup for: ${page}`);
 
+    if (page !== PAGE.WATCH) {
+      IntentionalYT.pictureInPicture?.removeButton();
+    }
+
     globalCleanup();
 
     switch (page) {
@@ -78,6 +82,9 @@
 
     router.onChange((newPage, oldPage) => {
       debug?.log('main', `Page changed: ${oldPage} → ${newPage}`);
+      if (oldPage === PAGE.WATCH && newPage !== PAGE.WATCH) {
+        IntentionalYT.pictureInPicture?.requestAuto?.('watch-route-exit');
+      }
       clearTimeout(safetyTimeout);
       pageCleanup();
       safetyTimeout = setTimeout(pageCleanup, 1500);

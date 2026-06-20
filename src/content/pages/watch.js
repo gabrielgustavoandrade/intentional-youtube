@@ -22,6 +22,7 @@ IntentionalYT.pages.watch = (() => {
     }
 
     IntentionalYT.layout?.reflowWatch();
+    IntentionalYT.pictureInPicture?.ensureButton();
   }
 
   function tryDisableAutoplay() {

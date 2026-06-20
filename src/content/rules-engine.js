@@ -59,12 +59,22 @@ IntentionalYT.rulesEngine = (() => {
   function unhideElements(selectorList) {
     const { elements } = queryAll(selectorList);
     for (const el of elements) {
-      if (el.dataset.iytHidden) {
-        delete el.dataset.iytHidden;
-        el.style.removeProperty('display');
-      }
+      unhideElement(el);
     }
   }
 
-  return { queryAll, hideElements, removeElements, unhideElements };
+  function unhideElement(el) {
+    if (!el?.dataset?.iytHidden) return;
+
+    delete el.dataset.iytHidden;
+    el.style.removeProperty('display');
+  }
+
+  function unhideManagedElements() {
+    for (const el of document.querySelectorAll('[data-iyt-hidden="true"]')) {
+      unhideElement(el);
+    }
+  }
+
+  return { queryAll, hideElements, removeElements, unhideElements, unhideManagedElements };
 })();

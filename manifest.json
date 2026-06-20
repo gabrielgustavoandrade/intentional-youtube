@@ -23,6 +23,7 @@
         "src/content/pages/channel.js",
         "src/content/pages/subscriptions.js",
         "src/content/pages/shorts.js",
+        "src/content/picture-in-picture.js",
         "src/content/layout.js",
         "src/content/observer.js",
         "src/content/main.js"

@@ -40,12 +40,15 @@ function applySettings(stored) {
 chrome.storage.local.get(IntentionalYT.DEFAULTS, applySettings);
 
 chrome.runtime.onMessage.addListener((msg) => {
-  if (msg.type === 'SETTINGS_CHANGED') {
-    chrome.storage.local.get(IntentionalYT.DEFAULTS, (stored) => {
-      IntentionalYT.settings = { ...IntentionalYT.DEFAULTS, ...stored };
-      if (typeof IntentionalYT.runCleanup === 'function') {
-        IntentionalYT.runCleanup();
-      }
-    });
-  }
+  if (msg?.type !== 'SETTINGS_CHANGED') return undefined;
+
+  chrome.storage.local.get(IntentionalYT.DEFAULTS, (stored) => {
+    IntentionalYT.settings = { ...IntentionalYT.DEFAULTS, ...stored };
+    IntentionalYT.rulesEngine?.unhideManagedElements?.();
+    if (typeof IntentionalYT.runCleanup === 'function') {
+      IntentionalYT.runCleanup();
+    }
+  });
+
+  return undefined;
 });

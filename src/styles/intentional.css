@@ -4,6 +4,12 @@
  * Uses !important sparingly and only where needed to override YT styles
  */
 
+/* ── Watch page: prevent horizontal overflow ─────────────────────── */
+
+ytd-watch-flexy.iyt-no-sidebar {
+  overflow-x: hidden !important;
+}
+
 /* ── Watch page: expand primary when sidebar is hidden ────────────── */
 
 ytd-watch-flexy.iyt-no-sidebar #secondary {
@@ -11,18 +17,26 @@ ytd-watch-flexy.iyt-no-sidebar #secondary {
 }
 
 ytd-watch-flexy.iyt-no-sidebar #primary {
-  max-width: 100% !important;
+  max-width: 1600px !important;
   margin: 0 auto !important;
 }
 
 ytd-watch-flexy.iyt-no-sidebar #columns {
   max-width: 100% !important;
+  overflow-x: hidden !important;
+  justify-content: center !important;
 }
 
 /* Keep video player at a reasonable max width */
 ytd-watch-flexy.iyt-no-sidebar #primary-inner {
-  max-width: 1280px !important;
+  max-width: 100% !important;
   margin: 0 auto !important;
+}
+
+/* Ensure below-player content (metadata, comments) has proper padding */
+ytd-watch-flexy.iyt-no-sidebar #below {
+  padding: 0 24px !important;
+  box-sizing: border-box !important;
 }
 
 /* Ensure player sizing stays good */
@@ -51,6 +65,86 @@ ytd-watch-flexy.iyt-no-sidebar #below > ytd-watch-next-secondary-results-rendere
 .ytp-autonav-endscreen-countdown,
 .ytp-autonav-endscreen-upnext-container {
   display: none !important;
+}
+
+/* ── Picture-in-picture action ────────────────────────────────────── */
+
+#movie_player.iyt-pip-ready {
+  isolation: isolate;
+}
+
+.iyt-pip-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 65;
+  width: 42px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.48), rgba(255, 255, 255, 0.12) 44%, rgba(255, 255, 255, 0.26)),
+    rgba(18, 22, 30, 0.42);
+  color: #fff;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 1px rgba(255, 255, 255, 0.36),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.16s ease, transform 0.16s ease, background 0.16s ease, border-color 0.16s ease;
+  -webkit-backdrop-filter: blur(24px) saturate(1.65);
+  backdrop-filter: blur(24px) saturate(1.65);
+}
+
+#movie_player:hover .iyt-pip-button,
+#movie_player .iyt-pip-button:focus-visible,
+#movie_player .iyt-pip-button.is-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.iyt-pip-button:hover,
+.iyt-pip-button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.58);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.16) 44%, rgba(255, 255, 255, 0.34)),
+    rgba(22, 24, 30, 0.54);
+  outline: none;
+}
+
+.iyt-pip-button:focus-visible {
+  box-shadow: 0 0 0 3px rgba(90, 170, 255, 0.72), 0 12px 30px rgba(0, 0, 0, 0.24);
+}
+
+.iyt-pip-button.is-active {
+  border-color: rgba(136, 204, 255, 0.78);
+  background:
+    linear-gradient(135deg, rgba(151, 216, 255, 0.7), rgba(59, 143, 255, 0.36) 44%, rgba(255, 255, 255, 0.24)),
+    rgba(14, 32, 58, 0.58);
+}
+
+.iyt-pip-icon {
+  position: relative;
+  display: block;
+  width: 19px;
+  height: 13px;
+  margin: 0 auto;
+  border: 1.7px solid currentColor;
+  border-radius: 3px;
+}
+
+.iyt-pip-icon::after {
+  content: '';
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  width: 7px;
+  height: 4px;
+  border-radius: 1.5px;
+  background: currentColor;
 }
 
 /* ── Shorts hiding via CSS (fast, before JS runs) ─────────────────── */

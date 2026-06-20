@@ -9,242 +9,359 @@
       box-sizing: border-box;
     }
 
+    :root {
+      color-scheme: light dark;
+      --bg: #f2f2f7;
+      --group: #ffffff;
+      --text: #000000;
+      --secondary: rgba(60, 60, 67, 0.6);
+      --separator: rgba(60, 60, 67, 0.29);
+      --control-fill: rgba(120, 120, 128, 0.24);
+      --green: #34c759;
+      --blue: #007aff;
+      --switch-on: var(--green);
+      --focus: rgba(0, 122, 255, 0.28);
+    }
+
+    html,
     body {
-      width: 300px;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      width: 320px;
+      min-height: 326px;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
       font-size: 13px;
-      color: #1a1a1a;
-      background: #fff;
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
     }
 
-    .header {
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid #e5e5e5;
+    button,
+    select,
+    input {
+      font: inherit;
     }
 
-    .header h1 {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
+    .app {
+      padding: 14px 12px 12px;
     }
 
-    .header p {
-      font-size: 11px;
-      color: #666;
-      margin-top: 2px;
+    .title {
+      margin: 0 2px 10px;
+      font-size: 17px;
+      line-height: 1.15;
+      font-weight: 650;
+      letter-spacing: 0;
     }
 
-    .section {
-      padding: 12px 16px;
-      border-bottom: 1px solid #f0f0f0;
+    .group {
+      overflow: hidden;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      background: var(--group);
     }
 
-    .section:last-of-type {
-      border-bottom: none;
-    }
-
-    .toggle-row {
+    .row {
+      position: relative;
       display: flex;
+      min-height: 42px;
       align-items: center;
       justify-content: space-between;
-      padding: 6px 0;
+      gap: 12px;
+      padding: 7px 10px 7px 13px;
     }
 
-    .toggle-label {
-      font-size: 13px;
-      user-select: none;
+    .row:has(.detail) {
+      min-height: 50px;
+    }
+
+    .row + .row::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 13px;
+      right: 0;
+      height: 1px;
+      background: var(--separator);
+      transform: scaleY(0.5);
+      transform-origin: top;
+    }
+
+    .row-main {
+      min-width: 0;
+    }
+
+    .label {
+      display: block;
+      color: var(--text);
+      font-size: 13.5px;
+      line-height: 1.18;
+      font-weight: 400;
+      letter-spacing: 0;
+    }
+
+    .detail {
+      display: block;
+      margin-top: 2px;
+      overflow: hidden;
+      color: var(--secondary);
+      font-size: 11.5px;
+      line-height: 1.18;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .pip-button {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      color: var(--text);
       cursor: pointer;
+      text-align: left;
     }
 
-    .toggle-sublabel {
-      font-size: 11px;
-      color: #888;
-      margin-top: 1px;
+    .pip-icon {
+      position: relative;
+      width: 26px;
+      height: 26px;
+      flex: 0 0 auto;
+      border: 1.5px solid #8b5cf6;
+      border-radius: 50%;
+      background: rgba(139, 92, 246, 0.14);
+    }
+
+    .pip-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 8px solid #8b5cf6;
+      transform: translate(-36%, -50%);
     }
 
     .toggle {
       position: relative;
       width: 36px;
-      height: 20px;
-      flex-shrink: 0;
-      margin-left: 12px;
+      height: 22px;
+      flex: 0 0 auto;
     }
 
     .toggle input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle .slider {
       position: absolute;
       inset: 0;
-      background: #ccc;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.15s;
+      opacity: 0;
     }
 
-    .toggle .slider::before {
+    .slider {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: var(--control-fill);
+      cursor: pointer;
+      transition: background 0.16s ease;
+    }
+
+    .slider::before {
       content: '';
       position: absolute;
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
       left: 2px;
       top: 2px;
-      background: #fff;
       border-radius: 50%;
-      transition: transform 0.15s;
+      background: #ffffff;
+      box-shadow:
+        0 2px 5px rgba(0, 0, 0, 0.18),
+        0 1px 1px rgba(0, 0, 0, 0.06);
+      transition: transform 0.16s cubic-bezier(0.28, 0.8, 0.32, 1);
     }
 
     .toggle input:checked + .slider {
-      background: #1a1a1a;
+      background: var(--switch-on);
     }
 
     .toggle input:checked + .slider::before {
-      transform: translateX(16px);
+      transform: translateX(14px);
     }
 
-    .select-row {
+    .select-wrap {
+      position: relative;
       display: flex;
+      max-width: 142px;
+      flex: 0 0 auto;
       align-items: center;
-      justify-content: space-between;
-      padding: 6px 0;
     }
 
-    .select-row select {
-      font-size: 12px;
-      padding: 4px 8px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      background: #fafafa;
-      color: #1a1a1a;
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 1px;
+      width: 7px;
+      height: 7px;
+      border-right: 1.5px solid var(--secondary);
+      border-bottom: 1.5px solid var(--secondary);
+      pointer-events: none;
+      transform: rotate(45deg) translateY(-2px);
+    }
+
+    select {
+      width: 142px;
+      max-width: 142px;
+      padding: 0 16px 0 0;
+      border: 0;
+      background: transparent;
+      color: var(--secondary);
+      font-size: 13.5px;
+      line-height: 1.18;
+      text-align: right;
       cursor: pointer;
+      appearance: none;
     }
 
-    .footer {
-      padding: 12px 16px;
-      border-top: 1px solid #e5e5e5;
-      background: #f7f7f7;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .status {
+      min-height: 0;
+      margin: -6px 2px 10px;
+      color: var(--secondary);
+      font-size: 11px;
+      line-height: 1.25;
     }
 
-    .footer a {
-      font-size: 12px;
-      color: #888;
-      text-decoration: none;
-    }
-
-    .footer a:hover {
-      color: #1a1a1a;
-    }
-
-    .footer-links {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .footer-sep {
-      width: 1px;
-      height: 10px;
-      background: #ddd;
-    }
-
-    #donate {
-      color: #7c3aed;
-    }
-
-    #donate:hover {
-      color: #5b21b6;
+    .status:empty {
+      display: none;
     }
 
     .reload-banner {
       display: none;
-      padding: 8px 16px;
-      background: #fffbeb;
-      border-top: 1px solid #fde68a;
+      margin: -2px 0 0;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fff3cd;
+      color: #7a4f00;
       font-size: 12px;
-      color: #92400e;
       text-align: center;
       cursor: pointer;
-    }
-
-    .reload-banner:hover {
-      background: #fef3c7;
     }
 
     .reload-banner.visible {
       display: block;
     }
+
+    .pip-button:focus-visible,
+    select:focus-visible,
+    .toggle input:focus-visible + .slider,
+    .reload-banner:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1c1e;
+        --group: #2c2c2e;
+        --text: #ffffff;
+        --secondary: rgba(235, 235, 245, 0.6);
+        --separator: rgba(84, 84, 88, 0.65);
+        --control-fill: rgba(120, 120, 128, 0.32);
+        --switch-on: var(--blue);
+      }
+
+      .reload-banner {
+        background: #3a2e13;
+        color: #ffd87a;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>Intentional YouTube</h1>
-    <p>Focus on what you chose to watch</p>
-  </div>
+  <main class="app" aria-label="Intentional YouTube controls">
+    <h1 class="title">Intentional YouTube</h1>
 
-  <div class="section">
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Hide Home</div>
+    <section class="group">
+      <button class="pip-button row" id="toggle-pip" type="button">
+        <span class="row-main">
+          <span class="label">Picture in Picture</span>
+          <span class="detail">Float video</span>
+        </span>
+        <span class="pip-icon" aria-hidden="true"></span>
+      </button>
+    </section>
+
+    <div class="status" id="pip-status" role="status" aria-live="polite"></div>
+
+    <section class="group">
+      <div class="row">
+        <span class="row-main">
+          <label class="label" for="redirectHome">Hide Home</label>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="redirectHome">
+          <span class="slider"></span>
+        </label>
       </div>
-      <label class="toggle">
-        <input type="checkbox" id="redirectHome">
-        <span class="slider"></span>
-      </label>
-    </div>
 
-    <div class="select-row" id="redirect-target-row">
-      <span class="toggle-label">Redirect to</span>
-      <select id="redirectTarget">
-        <option value="subscriptions">Subscriptions</option>
-        <option value="watch-later">Watch Later</option>
-        <option value="library">Library</option>
-      </select>
-    </div>
-
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Hide Shorts</div>
+      <div class="row" id="redirect-target-row">
+        <label class="label" for="redirectTarget">Redirect to</label>
+        <span class="select-wrap">
+          <select id="redirectTarget">
+            <option value="subscriptions">Subscriptions</option>
+            <option value="watch-later">Watch Later</option>
+            <option value="library">Library</option>
+          </select>
+        </span>
       </div>
-      <label class="toggle">
-        <input type="checkbox" id="hideShorts">
-        <span class="slider"></span>
-      </label>
-    </div>
+    </section>
 
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Hide Distractions</div>
-        <div class="toggle-sublabel">Recommendations, autoplay, suggested videos</div>
+    <section class="group">
+      <div class="row">
+        <span class="row-main">
+          <label class="label" for="hideShorts">Hide Shorts</label>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="hideShorts">
+          <span class="slider"></span>
+        </label>
       </div>
-      <label class="toggle">
-        <input type="checkbox" id="hideDistractions">
-        <span class="slider"></span>
-      </label>
-    </div>
 
-    <div class="toggle-row">
-      <div>
-        <div class="toggle-label">Monk Mode</div>
-        <div class="toggle-sublabel">Only subs, search, channels</div>
+      <div class="row">
+        <span class="row-main">
+          <label class="label" for="hideDistractions">Hide Distractions</label>
+          <span class="detail">Recommendations, autoplay</span>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="hideDistractions">
+          <span class="slider"></span>
+        </label>
       </div>
-      <label class="toggle">
-        <input type="checkbox" id="monkMode">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
 
-  <div class="reload-banner" id="reload-banner">Reload YouTube tabs to apply changes</div>
+      <div class="row">
+        <span class="row-main">
+          <label class="label" for="monkMode">Monk Mode</label>
+          <span class="detail">Subs, search, channels</span>
+        </span>
+        <label class="toggle">
+          <input type="checkbox" id="monkMode">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
 
-  <div class="footer">
-    <a href="https://buymeacoffee.com/gabrielgustavoandrade" id="donate" target="_blank">Buy me a coffee ☕</a>
-  </div>
+    <div class="reload-banner" id="reload-banner">Reload YouTube tabs</div>
+  </main>
 
   <script src="popup.js"></script>
 </body>

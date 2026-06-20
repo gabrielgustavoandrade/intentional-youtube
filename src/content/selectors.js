@@ -23,7 +23,8 @@ IntentionalYT.selectors = {
     // Shorts tab on channel pages
     channelTab: [
       'yt-tab-shape[tab-title="Shorts"]',
-      'tp-yt-paper-tab:has(> div:contains("Shorts"))',
+      'tp-yt-paper-tab[aria-label*="Shorts"]',
+      'tp-yt-paper-tab[title="Shorts"]',
       'yt-chip-cloud-chip-renderer:has(yt-formatted-string[title="Shorts"])'
     ],
     // Shorts section on channel page
