@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Intentional YouTube",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Turn YouTube into an intentional-use product. Removes Shorts, recommendations, and distractions.",
   "permissions": ["storage", "declarativeNetRequest", "declarativeNetRequestWithHostAccess", "tabs"],
   "host_permissions": ["*://*.youtube.com/*"],
